@@ -1,7 +1,50 @@
+import { compareClassNames, comparePeriods } from "./timetable";
+
 const formatFilterLabel = (filters) => ({
   day: filters.day === "All Days" ? "All Days" : filters.day,
   className: filters.className === "All Classes" ? "All Classes" : filters.className,
 });
+
+const DAY_ORDER = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+
+const getDayRank = (day) => {
+  const index = DAY_ORDER.indexOf(String(day ?? "").trim().toLowerCase());
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+};
+
+const sortDutySlipRows = (rows) =>
+  [...rows].sort((left, right) => {
+    const dayDiff = getDayRank(left.day) - getDayRank(right.day);
+
+    if (dayDiff !== 0) {
+      return dayDiff;
+    }
+
+    const periodDiff = comparePeriods(left.period, right.period);
+
+    if (periodDiff !== 0) {
+      return periodDiff;
+    }
+
+    const classDiff = compareClassNames(left.className, right.className);
+
+    if (classDiff !== 0) {
+      return classDiff;
+    }
+
+    return String(left.subject ?? "").localeCompare(String(right.subject ?? ""), undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+  });
 
 const groupBySubstituteTeacher = (rows) => {
   const grouped = new Map();
@@ -90,12 +133,14 @@ export const exportSubstituteDutyPdf = async (rows, filters) => {
       doc.addPage("a5", "landscape");
     }
 
-    drawHeader(doc, teacherName, teacherRows, filters);
+    const sortedTeacherRows = sortDutySlipRows(teacherRows);
+
+    drawHeader(doc, teacherName, sortedTeacherRows, filters);
 
     autoTable(doc, {
       startY: 70,
       head: [["Day", "Period", "Class", "Subject", "Replacing"]],
-      body: teacherRows.map((row) => [
+      body: sortedTeacherRows.map((row) => [
         row.day,
         row.period,
         row.className,
