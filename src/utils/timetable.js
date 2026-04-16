@@ -14,6 +14,8 @@ const compareText = (first, second) =>
     sensitivity: "base",
   });
 
+export const comparePeriods = (first, second) => compareText(first, second);
+
 const normalizeClassName = (value) =>
   String(value ?? "")
     .trim()
@@ -144,3 +146,14 @@ export const getSuggestedTeacher = (rows, currentRow, absentTeachers = []) =>
   getFreeTeachersForPeriod(rows, currentRow, absentTeachers)[0] || "";
 
 export const resolveCurrentTeacher = (row) => row.substituteTeacher || row.teacher;
+
+export const getTeacherDaySchedule = (rows, teacher, day, excludeRowId) =>
+  [...rows]
+    .filter((row) => {
+      if (row.id === excludeRowId || row.day !== day) {
+        return false;
+      }
+
+      return row.teacher === teacher || row.substituteTeacher === teacher;
+    })
+    .sort((left, right) => comparePeriods(left.period, right.period));

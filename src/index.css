@@ -275,6 +275,17 @@ button {
   gap: 8px;
 }
 
+.assignment-summary {
+  display: grid;
+  gap: 8px;
+}
+
+.schedule-note {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .filters-grid span,
 .absent-teacher-group > span {
   font-size: 0.92rem;

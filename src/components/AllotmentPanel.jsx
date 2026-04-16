@@ -1,4 +1,8 @@
-import { getFreeTeachersForPeriod, getSuggestedTeacher } from "../utils/timetable";
+import {
+  getFreeTeachersForPeriod,
+  getSuggestedTeacher,
+  getTeacherDaySchedule,
+} from "../utils/timetable";
 
 function AllotmentPanel({
   absentTeachers,
@@ -50,6 +54,9 @@ function AllotmentPanel({
                 const allTeachers = allTeacherOptions.filter(
                   (teacher) => !absentTeachers.includes(teacher),
                 );
+                const selectedTeacherSchedule = row.substituteTeacher
+                  ? getTeacherDaySchedule(rows, row.substituteTeacher, row.day, row.id)
+                  : [];
 
                 return (
                   <tr className="absent-row" key={row.id}>
@@ -107,9 +114,21 @@ function AllotmentPanel({
                           ) : null}
                         </select>
                         {row.substituteTeacher ? (
-                          <span className="chip chip-success">
-                            Assigned: {row.substituteTeacher}
-                          </span>
+                          <div className="assignment-summary">
+                            <span className="chip chip-success">
+                              Assigned: {row.substituteTeacher}
+                            </span>
+                            <span className="schedule-note">
+                              {selectedTeacherSchedule.length
+                                ? `Existing bells on ${row.day}: ${selectedTeacherSchedule
+                                    .map(
+                                      (scheduleRow) =>
+                                        `${scheduleRow.period} ${scheduleRow.className}`,
+                                    )
+                                    .join(", ")}`
+                                : `${row.substituteTeacher} has no other bell on ${row.day}.`}
+                            </span>
+                          </div>
                         ) : null}
                       </div>
                     </td>
