@@ -57,6 +57,11 @@ function App() {
     [filters, rows],
   );
 
+  const schoolTeacherOptions = useMemo(
+    () => getUniqueValues(rows, "teacher"),
+    [rows],
+  );
+
   const teacherOptions = useMemo(
     () => getUniqueValues(filteredRows, "teacher"),
     [filteredRows],
@@ -231,7 +236,7 @@ function App() {
           assignedCount={assignedCount}
           filteredCount={filteredRows.length}
           totalPeriods={rows.length}
-          totalTeachers={teacherOptions.length}
+          totalTeachers={schoolTeacherOptions.length}
         />
 
         {error ? <div className="alert-banner">{error}</div> : null}
@@ -273,10 +278,10 @@ function App() {
 
         <AllotmentPanel
           absentTeachers={selectedAbsentTeachers}
+          allTeacherOptions={schoolTeacherOptions}
           onAssignSubstitute={handleAssignSubstitute}
           periods={absentTeacherPeriods}
-          rows={filteredRows}
-          teacherOptions={teacherOptions}
+          rows={rows}
         />
 
         <TimetableTable rows={filteredRows} />

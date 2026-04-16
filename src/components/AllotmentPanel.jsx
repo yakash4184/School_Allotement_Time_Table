@@ -2,9 +2,9 @@ import { getFreeTeachersForPeriod, getSuggestedTeacher } from "../utils/timetabl
 
 function AllotmentPanel({
   absentTeachers,
+  allTeacherOptions,
   periods,
   rows,
-  teacherOptions,
   onAssignSubstitute,
 }) {
   const absentTeacherLabel =
@@ -47,6 +47,9 @@ function AllotmentPanel({
               {periods.map((row) => {
                 const freeTeachers = getFreeTeachersForPeriod(rows, row, absentTeachers);
                 const suggestedTeacher = getSuggestedTeacher(rows, row, absentTeachers);
+                const allTeachers = allTeacherOptions.filter(
+                  (teacher) => !absentTeachers.includes(teacher),
+                );
 
                 return (
                   <tr className="absent-row" key={row.id}>
@@ -75,21 +78,33 @@ function AllotmentPanel({
                           }
                         >
                           <option value="">
-                            {suggestedTeacher
-                              ? `Choose substitute (suggested: ${suggestedTeacher})`
-                              : "Choose substitute"}
+                            Choose substitute
                           </option>
-                          {teacherOptions.map((teacher) => {
-                            const isDisabled = absentTeachers.includes(teacher);
-                            const isSuggested = teacher === suggestedTeacher;
-
-                            return (
-                              <option disabled={isDisabled} key={teacher} value={teacher}>
-                                {teacher}
-                                {isSuggested ? " (Suggested free)" : ""}
+                          {freeTeachers.length ? (
+                            <optgroup label="Suggested Free Teachers">
+                              {freeTeachers.map((teacher) => (
+                                <option key={`suggested-${teacher}`} value={teacher}>
+                                  {teacher}
+                                  {teacher === suggestedTeacher ? " (Suggested)" : ""}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ) : (
+                            <optgroup label="Suggested Free Teachers">
+                              <option disabled value="">
+                                No free teacher found
                               </option>
-                            );
-                          })}
+                            </optgroup>
+                          )}
+                          {allTeachers.length ? (
+                            <optgroup label="All Teachers">
+                              {allTeachers.map((teacher) => (
+                                <option key={`all-${teacher}`} value={teacher}>
+                                  {teacher}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ) : null}
                         </select>
                         {row.substituteTeacher ? (
                           <span className="chip chip-success">
