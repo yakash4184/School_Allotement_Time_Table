@@ -1,9 +1,14 @@
-function StatsCards({ totalPeriods, totalTeachers, filteredCount, assignedCount }) {
+function StatsCards({
+  totalPeriods,
+  totalTeachers,
+  pdfDutyRows,
+  pdfTeachers,
+}) {
   const stats = [
-    { label: "Total Periods", value: totalPeriods },
-    { label: "Teachers", value: totalTeachers },
-    { label: "Visible Rows", value: filteredCount },
-    { label: "Substitutes Assigned", value: assignedCount },
+    { label: "School Periods", value: totalPeriods },
+    { label: "School Teachers", value: totalTeachers },
+    { label: "PDF Duty Rows", value: pdfDutyRows },
+    { label: "PDF Slip Teachers", value: pdfTeachers },
   ];
 
   return (

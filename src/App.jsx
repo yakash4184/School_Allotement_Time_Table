@@ -95,6 +95,11 @@ function App() {
     [filteredRows],
   );
 
+  const pdfTeacherCount = useMemo(
+    () => new Set(assignedFilteredRows.map((row) => row.substituteTeacher)).size,
+    [assignedFilteredRows],
+  );
+
   useEffect(() => {
     setAbsentTeachers((currentSelections) => {
       const nextSelections = buildAbsentTeacherSelections(
@@ -233,8 +238,8 @@ function App() {
         />
 
         <StatsCards
-          assignedCount={assignedCount}
-          filteredCount={filteredRows.length}
+          pdfDutyRows={assignedFilteredRows.length}
+          pdfTeachers={pdfTeacherCount}
           totalPeriods={rows.length}
           totalTeachers={schoolTeacherOptions.length}
         />
