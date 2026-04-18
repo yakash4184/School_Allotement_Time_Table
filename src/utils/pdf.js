@@ -1,6 +1,9 @@
 import { compareClassNames, comparePeriods } from "./timetable";
 
 const SCHOOL_NAME = "Savitri Balika Inter College";
+const SCHOOL_MOTTO = "LEARN.GROW.SUCCEED";
+const SCHOOL_LOGO_PATH = "/school-logo.png";
+let schoolLogoDataUrlPromise;
 
 const formatFilterLabel = (filters) => ({
   day: filters.day === "All Days" ? "All Days" : filters.day,
@@ -70,41 +73,115 @@ const groupBySubstituteTeacher = (rows) => {
   );
 };
 
-const drawHeader = (doc, teacherName, rows, filters) => {
+const readBlobAsDataUrl = (blob) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Unable to read school logo."));
+    reader.readAsDataURL(blob);
+  });
+
+const getSchoolLogoDataUrl = async () => {
+  if (!schoolLogoDataUrlPromise) {
+    schoolLogoDataUrlPromise = fetch(SCHOOL_LOGO_PATH)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load school logo.");
+        }
+
+        return response.blob();
+      })
+      .then((blob) => readBlobAsDataUrl(blob))
+      .catch(() => null);
+  }
+
+  return schoolLogoDataUrlPromise;
+};
+
+const drawLogoWatermark = (doc, schoolLogoDataUrl, pageWidth) => {
+  if (!schoolLogoDataUrl) {
+    return;
+  }
+
+  const watermarkSize = 24;
+  const watermarkX = pageWidth / 2 - watermarkSize / 2;
+  const watermarkY = 18;
+
+  if (
+    typeof doc.saveGraphicsState === "function" &&
+    typeof doc.restoreGraphicsState === "function" &&
+    typeof doc.GState === "function" &&
+    typeof doc.setGState === "function"
+  ) {
+    doc.saveGraphicsState();
+    doc.setGState(new doc.GState({ opacity: 0.08 }));
+    doc.addImage(
+      schoolLogoDataUrl,
+      "PNG",
+      watermarkX,
+      watermarkY,
+      watermarkSize,
+      watermarkSize,
+      undefined,
+      "FAST",
+    );
+    doc.restoreGraphicsState();
+    return;
+  }
+
+  doc.addImage(
+    schoolLogoDataUrl,
+    "PNG",
+    watermarkX,
+    watermarkY,
+    watermarkSize,
+    watermarkSize,
+    undefined,
+    "FAST",
+  );
+};
+
+const drawHeader = (doc, teacherName, rows, filters, schoolLogoDataUrl) => {
   const pageWidth = doc.internal.pageSize.getWidth();
   const primaryTextColor = [18, 18, 18];
 
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(216, 226, 239);
   doc.setLineWidth(0.5);
-  doc.roundedRect(8, 8, pageWidth - 16, 36, 6, 6, "FD");
+  doc.roundedRect(8, 8, pageWidth - 16, 44, 6, 6, "FD");
+
+  drawLogoWatermark(doc, schoolLogoDataUrl, pageWidth);
 
   doc.setTextColor(...primaryTextColor);
   doc.setFont("times", "bold");
-  doc.setFontSize(15.5);
-  doc.text(SCHOOL_NAME.toUpperCase(), pageWidth / 2, 17, { align: "center" });
+  doc.setFontSize(13.6);
+  doc.text(SCHOOL_NAME.toUpperCase(), pageWidth / 2, 18, { align: "center" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.4);
+  doc.text(SCHOOL_MOTTO, pageWidth - 14, 14.8, { align: "right" });
 
   doc.setDrawColor(196, 196, 196);
   doc.setLineWidth(0.35);
-  doc.line(26, 20, pageWidth - 26, 20);
+  doc.line(24, 22, pageWidth - 24, 22);
 
   doc.setTextColor(...primaryTextColor);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(24);
-  doc.text("Substitute Duty Slip", pageWidth / 2, 30, { align: "center" });
+  doc.setFontSize(21.5);
+  doc.text("SUBSTITUTE DUTY SLIP", pageWidth / 2, 34.5, { align: "center" });
 
   doc.setTextColor(...primaryTextColor);
   doc.setFont("times", "italic");
-  doc.setFontSize(11);
-  doc.text("Teacher Allotment System", pageWidth / 2, 37, { align: "center" });
+  doc.setFontSize(10.6);
+  doc.text("Teacher Allotment System", pageWidth / 2, 42, { align: "center" });
 
   doc.setFillColor(240, 247, 255);
-  doc.roundedRect(8, 48, pageWidth - 16, 24, 5, 5, "F");
+  doc.roundedRect(8, 54, pageWidth - 16, 24, 5, 5, "F");
 
   doc.setTextColor(...primaryTextColor);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(15);
-  doc.text(teacherName, 14, 58);
+  doc.text(teacherName, 14, 64);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.5);
@@ -115,11 +192,11 @@ const drawHeader = (doc, teacherName, rows, filters) => {
     timeStyle: "short",
   });
 
-  doc.text(`Assigned periods: ${rows.length}`, 14, 65);
-  doc.text(`Day: ${day}`, 88, 58);
-  doc.text(`Class Filter: ${className}`, 88, 65);
-  doc.text(`Generated: ${generatedAt}`, pageWidth - 14, 58, { align: "right" });
-  doc.text("Hand this slip to the substitute teacher.", pageWidth - 14, 65, {
+  doc.text(`Assigned periods: ${rows.length}`, 14, 71);
+  doc.text(`Day: ${day}`, 88, 64);
+  doc.text(`Class Filter: ${className}`, 88, 71);
+  doc.text(`Generated: ${generatedAt}`, pageWidth - 14, 64, { align: "right" });
+  doc.text("Hand this slip to the substitute teacher.", pageWidth - 14, 71, {
     align: "right",
   });
 };
@@ -135,6 +212,7 @@ export const exportSubstituteDutyPdf = async (rows, filters) => {
     import("jspdf"),
     import("jspdf-autotable"),
   ]);
+  const schoolLogoDataUrl = await getSchoolLogoDataUrl();
 
   const groupedRows = groupBySubstituteTeacher(assignedRows);
   const doc = new jsPDF({
@@ -150,10 +228,10 @@ export const exportSubstituteDutyPdf = async (rows, filters) => {
 
     const sortedTeacherRows = sortDutySlipRows(teacherRows);
 
-    drawHeader(doc, teacherName, sortedTeacherRows, filters);
+    drawHeader(doc, teacherName, sortedTeacherRows, filters, schoolLogoDataUrl);
 
     autoTable(doc, {
-      startY: 78,
+      startY: 84,
       head: [["Day", "Period", "Class", "Subject", "Replacing"]],
       body: sortedTeacherRows.map((row) => [
         row.day,

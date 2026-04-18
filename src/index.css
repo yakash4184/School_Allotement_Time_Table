@@ -14,6 +14,7 @@
   --warning: #d88a2d;
   --shadow: 0 22px 45px rgba(32, 69, 112, 0.15);
   --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-display: "Aptos Display", "Candara", "Trebuchet MS", "Segoe UI Variable Display", sans-serif;
 }
 
 :root[data-theme="dark"] {
@@ -96,11 +97,15 @@ button {
 }
 
 .hero-card {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
   padding: 30px;
   margin-bottom: 20px;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--primary) 12%, transparent), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, #ffffff 8%), var(--surface));
 }
 
 .hero-brand {
@@ -139,6 +144,35 @@ button {
   line-height: 1.05;
 }
 
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.hero-title-accent {
+  display: inline-block;
+  max-width: none;
+  white-space: nowrap;
+  background-image: linear-gradient(
+    120deg,
+    #0f4fb1 0%,
+    #2f7df4 24%,
+    #1aa7a1 48%,
+    #ff8a3d 72%,
+    #7d55f6 100%
+  );
+  background-size: 220% 220%;
+  background-position: 0% 50%;
+  color: #1a3760;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+  text-shadow: 0 10px 24px rgba(38, 83, 140, 0.12);
+  animation: title-shift 8s ease-in-out infinite;
+}
+
 .hero-copy,
 .card p,
 .muted-text,
@@ -150,6 +184,82 @@ button {
   max-width: 760px;
   margin: 14px 0 0;
   line-height: 1.65;
+}
+
+@keyframes title-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-side-panel {
+  display: grid;
+  gap: 14px;
+  width: min(280px, 100%);
+}
+
+.clock-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--line) 82%);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--primary) 18%, transparent), transparent 42%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--surface-strong) 94%, transparent),
+      color-mix(in srgb, var(--bg-strong) 12%, var(--surface-strong) 88%)
+    );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.clock-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -42% auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+  filter: blur(8px);
+}
+
+.clock-label,
+.theme-toggle-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.clock-card strong,
+.theme-toggle strong {
+  position: relative;
+  z-index: 1;
+}
+
+.clock-card strong {
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  line-height: 1;
+}
+
+.clock-date {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .theme-toggle,
@@ -173,6 +283,63 @@ button {
   background: color-mix(in srgb, var(--primary) 10%, var(--surface-strong) 90%);
   color: var(--text);
   border: 1px solid var(--line);
+}
+
+.theme-toggle {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  min-height: 84px;
+  padding: 16px 18px;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+
+.theme-toggle-light::before {
+  background:
+    linear-gradient(135deg, rgba(72, 137, 255, 0.22), rgba(105, 229, 187, 0.12)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.3));
+}
+
+.theme-toggle-dark::before {
+  background:
+    linear-gradient(135deg, rgba(12, 32, 63, 0.88), rgba(33, 87, 166, 0.55)),
+    linear-gradient(180deg, rgba(14, 31, 56, 0.94), rgba(10, 23, 40, 0.92));
+}
+
+.theme-toggle:hover::before {
+  opacity: 1;
+}
+
+.theme-toggle strong {
+  font-size: 1.2rem;
+}
+
+.theme-toggle-light strong {
+  color: #143256;
+}
+
+.theme-toggle-dark strong {
+  color: #f1f6ff;
+}
+
+.theme-toggle-dark .theme-toggle-label {
+  color: #a8ccff;
+}
+
+.theme-toggle > * {
+  position: relative;
+  z-index: 1;
 }
 
 .primary-button {
@@ -444,8 +611,17 @@ tbody tr:last-child td {
     flex-direction: column;
   }
 
+  .hero-card {
+    grid-template-columns: 1fr;
+  }
+
   .hero-brand {
     align-items: flex-start;
+  }
+
+  .hero-side-panel {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .stats-grid,
@@ -477,9 +653,18 @@ tbody tr:last-child td {
     font-size: 2rem;
   }
 
+  .hero-title-accent {
+    max-width: 100%;
+    white-space: normal;
+  }
+
   .hero-brand {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero-side-panel {
+    grid-template-columns: 1fr;
   }
 
   .hero-logo {
@@ -491,5 +676,11 @@ tbody tr:last-child td {
   .export-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-accent {
+    animation: none;
   }
 }
