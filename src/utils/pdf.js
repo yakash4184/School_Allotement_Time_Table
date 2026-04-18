@@ -1,5 +1,7 @@
 import { compareClassNames, comparePeriods } from "./timetable";
 
+const SCHOOL_NAME = "Savitri Balika Inter College";
+
 const formatFilterLabel = (filters) => ({
   day: filters.day === "All Days" ? "All Days" : filters.day,
   className: filters.className === "All Classes" ? "All Classes" : filters.className,
@@ -70,28 +72,39 @@ const groupBySubstituteTeacher = (rows) => {
 
 const drawHeader = (doc, teacherName, rows, filters) => {
   const pageWidth = doc.internal.pageSize.getWidth();
+  const primaryTextColor = [18, 18, 18];
 
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(216, 226, 239);
   doc.setLineWidth(0.5);
-  doc.roundedRect(8, 8, pageWidth - 16, 28, 6, 6, "FD");
+  doc.roundedRect(8, 8, pageWidth - 16, 36, 6, 6, "FD");
 
-  doc.setTextColor(24, 53, 92);
+  doc.setTextColor(...primaryTextColor);
+  doc.setFont("times", "bold");
+  doc.setFontSize(15.5);
+  doc.text(SCHOOL_NAME.toUpperCase(), pageWidth / 2, 17, { align: "center" });
+
+  doc.setDrawColor(196, 196, 196);
+  doc.setLineWidth(0.35);
+  doc.line(26, 20, pageWidth - 26, 20);
+
+  doc.setTextColor(...primaryTextColor);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(24);
-  doc.text("Substitute Duty Slip", pageWidth / 2, 20, { align: "center" });
+  doc.text("Substitute Duty Slip", pageWidth / 2, 30, { align: "center" });
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11.5);
-  doc.text("Teacher Allotment System", pageWidth / 2, 28, { align: "center" });
+  doc.setTextColor(...primaryTextColor);
+  doc.setFont("times", "italic");
+  doc.setFontSize(11);
+  doc.text("Teacher Allotment System", pageWidth / 2, 37, { align: "center" });
 
   doc.setFillColor(240, 247, 255);
-  doc.roundedRect(8, 40, pageWidth - 16, 24, 5, 5, "F");
+  doc.roundedRect(8, 48, pageWidth - 16, 24, 5, 5, "F");
 
-  doc.setTextColor(33, 56, 89);
+  doc.setTextColor(...primaryTextColor);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(15);
-  doc.text(teacherName, 14, 50);
+  doc.text(teacherName, 14, 58);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.5);
@@ -102,11 +115,11 @@ const drawHeader = (doc, teacherName, rows, filters) => {
     timeStyle: "short",
   });
 
-  doc.text(`Assigned periods: ${rows.length}`, 14, 57);
-  doc.text(`Day: ${day}`, 88, 50);
-  doc.text(`Class Filter: ${className}`, 88, 57);
-  doc.text(`Generated: ${generatedAt}`, pageWidth - 14, 50, { align: "right" });
-  doc.text("Hand this slip to the substitute teacher.", pageWidth - 14, 57, {
+  doc.text(`Assigned periods: ${rows.length}`, 14, 65);
+  doc.text(`Day: ${day}`, 88, 58);
+  doc.text(`Class Filter: ${className}`, 88, 65);
+  doc.text(`Generated: ${generatedAt}`, pageWidth - 14, 58, { align: "right" });
+  doc.text("Hand this slip to the substitute teacher.", pageWidth - 14, 65, {
     align: "right",
   });
 };
@@ -140,7 +153,7 @@ export const exportSubstituteDutyPdf = async (rows, filters) => {
     drawHeader(doc, teacherName, sortedTeacherRows, filters);
 
     autoTable(doc, {
-      startY: 70,
+      startY: 78,
       head: [["Day", "Period", "Class", "Subject", "Replacing"]],
       body: sortedTeacherRows.map((row) => [
         row.day,
@@ -153,12 +166,12 @@ export const exportSubstituteDutyPdf = async (rows, filters) => {
       theme: "grid",
       headStyles: {
         fillColor: [221, 233, 251],
-        textColor: [40, 68, 102],
+        textColor: [18, 18, 18],
         fontStyle: "bold",
         lineColor: [203, 217, 237],
       },
       bodyStyles: {
-        textColor: [34, 55, 84],
+        textColor: [18, 18, 18],
         lineColor: [221, 229, 241],
       },
       alternateRowStyles: {
@@ -181,7 +194,7 @@ export const exportSubstituteDutyPdf = async (rows, filters) => {
 
     doc.setFont("helvetica", "italic");
     doc.setFontSize(8.6);
-    doc.setTextColor(94, 116, 144);
+    doc.setTextColor(18, 18, 18);
     doc.text(
       "Please follow this revised allotment for the current school session.",
       8,
