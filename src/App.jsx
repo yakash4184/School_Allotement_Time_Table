@@ -72,6 +72,9 @@ function App() {
     [filteredRows],
   );
 
+  const isFilteredView =
+    filters.day !== "All Days" || filters.className !== "All Classes";
+
   const selectedAbsentTeachers = useMemo(
     () => absentTeachers.filter(Boolean),
     [absentTeachers],
@@ -244,10 +247,12 @@ function App() {
         />
 
         <StatsCards
+          periodsLabel={isFilteredView ? "Visible Periods" : "School Periods"}
           pdfDutyRows={assignedFilteredRows.length}
           pdfTeachers={pdfTeacherCount}
-          totalPeriods={rows.length}
-          totalTeachers={schoolTeacherOptions.length}
+          teachersLabel={isFilteredView ? "Visible Teachers" : "School Teachers"}
+          totalPeriods={filteredRows.length}
+          totalTeachers={teacherOptions.length}
         />
 
         {error ? <div className="alert-banner">{error}</div> : null}

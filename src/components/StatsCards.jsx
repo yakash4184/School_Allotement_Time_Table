@@ -1,12 +1,14 @@
 function StatsCards({
+  periodsLabel,
+  teachersLabel,
   totalPeriods,
   totalTeachers,
   pdfDutyRows,
   pdfTeachers,
 }) {
   const stats = [
-    { label: "School Periods", value: totalPeriods },
-    { label: "School Teachers", value: totalTeachers },
+    { label: periodsLabel, value: totalPeriods },
+    { label: teachersLabel, value: totalTeachers },
     { label: "PDF Duty Rows", value: pdfDutyRows },
     { label: "PDF Slip Teachers", value: pdfTeachers },
   ];
