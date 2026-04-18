@@ -101,6 +101,47 @@ export const sortRows = (rows) =>
     return compareText(left.teacher, right.teacher);
   });
 
+export const sortAbsentTeacherPeriods = (rows, selectedTeachers = []) => {
+  const teacherRank = new Map(
+    selectedTeachers.map((teacher, index) => [teacher, index]),
+  );
+
+  return [...rows].sort((left, right) => {
+    const leftTeacherRank = teacherRank.get(left.teacher) ?? Number.MAX_SAFE_INTEGER;
+    const rightTeacherRank = teacherRank.get(right.teacher) ?? Number.MAX_SAFE_INTEGER;
+
+    if (leftTeacherRank !== rightTeacherRank) {
+      return leftTeacherRank - rightTeacherRank;
+    }
+
+    const teacherDiff = compareText(left.teacher, right.teacher);
+
+    if (teacherDiff !== 0) {
+      return teacherDiff;
+    }
+
+    const dayDiff = getDayRank(left.day) - getDayRank(right.day);
+
+    if (dayDiff !== 0) {
+      return dayDiff;
+    }
+
+    const periodDiff = compareText(left.period, right.period);
+
+    if (periodDiff !== 0) {
+      return periodDiff;
+    }
+
+    const classDiff = compareClassNames(left.className, right.className);
+
+    if (classDiff !== 0) {
+      return classDiff;
+    }
+
+    return compareText(left.subject, right.subject);
+  });
+};
+
 export const getUniqueValues = (rows, key) =>
   [...new Set(rows.map((row) => row[key]).filter(Boolean))].sort((first, second) => {
     if (key === "className") {

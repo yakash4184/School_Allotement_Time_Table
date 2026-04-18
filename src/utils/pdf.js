@@ -71,17 +71,19 @@ const groupBySubstituteTeacher = (rows) => {
 const drawHeader = (doc, teacherName, rows, filters) => {
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  doc.setFillColor(16, 62, 124);
-  doc.roundedRect(8, 8, pageWidth - 16, 28, 6, 6, "F");
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(216, 226, 239);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(8, 8, pageWidth - 16, 28, 6, 6, "FD");
 
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(24, 53, 92);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(17);
-  doc.text("Substitute Duty Slip", 14, 19);
+  doc.setFontSize(24);
+  doc.text("Substitute Duty Slip", pageWidth / 2, 20, { align: "center" });
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9.5);
-  doc.text("Teacher Allotment System", 14, 27);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11.5);
+  doc.text("Teacher Allotment System", pageWidth / 2, 28, { align: "center" });
 
   doc.setFillColor(240, 247, 255);
   doc.roundedRect(8, 40, pageWidth - 16, 24, 5, 5, "F");

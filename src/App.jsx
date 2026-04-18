@@ -8,7 +8,12 @@ import StatsCards from "./components/StatsCards";
 import TimetableTable from "./components/TimetableTable";
 import { exportAssignedAllotments, exportTimetable } from "./utils/excel";
 import { exportSubstituteDutyPdf } from "./utils/pdf";
-import { filterRows, getUniqueValues, sortRows } from "./utils/timetable";
+import {
+  filterRows,
+  getUniqueValues,
+  sortAbsentTeacherPeriods,
+  sortRows,
+} from "./utils/timetable";
 
 const areArraysEqual = (first, second) =>
   first.length === second.length &&
@@ -74,8 +79,9 @@ function App() {
 
   const absentTeacherPeriods = useMemo(
     () =>
-      sortRows(
+      sortAbsentTeacherPeriods(
         filteredRows.filter((row) => selectedAbsentTeachers.includes(row.teacher)),
+        selectedAbsentTeachers,
       ),
     [filteredRows, selectedAbsentTeachers],
   );

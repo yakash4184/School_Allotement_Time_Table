@@ -391,6 +391,26 @@ tbody tr:last-child td {
   background: color-mix(in srgb, var(--danger) 6%, var(--surface-strong) 94%);
 }
 
+.teacher-group-row td {
+  padding: 16px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--danger) 10%, transparent), transparent),
+    color-mix(in srgb, var(--bg-strong) 24%, var(--surface-strong) 76%);
+}
+
+.teacher-group-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.teacher-group-copy {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
 .assigned-row {
   background: color-mix(in srgb, var(--success) 6%, var(--surface-strong) 94%);
 }
